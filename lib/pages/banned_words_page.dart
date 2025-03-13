@@ -18,7 +18,7 @@ class BannedWordsPage extends StatelessWidget{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('You have '
-              '${appState.favorites.length} banned words:'),
+              '${appState.bannedWords.length} banned words:'),
               Row(
                 children: [
                   Expanded(
@@ -40,6 +40,12 @@ class BannedWordsPage extends StatelessWidget{
                 ],
               )
             ],
+          ),
+        ),
+        if(appState.bannedWords.isEmpty)
+        SizedBox(
+          child: Center(
+            child: Text('No banned words yet.'),
           ),
         ),
         Expanded(
