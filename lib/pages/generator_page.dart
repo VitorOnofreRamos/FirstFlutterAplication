@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:namer_app/componentes/bigcard_comp.dart';
-import 'package:namer_app/componentes/historylistview_comp.dart';
+import 'package:namer_app/componentes/big_card.dart';
+import 'package:namer_app/componentes/history_list_view.dart';
 import 'package:namer_app/main.dart';
 import 'package:provider/provider.dart';
 
