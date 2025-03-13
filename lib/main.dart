@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:namer_app/pages/banned_words_page.dart';
 import 'package:namer_app/pages/favorites_page.dart';
 import 'package:namer_app/pages/generator_page.dart';
+import 'package:namer_app/pages/settings_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -16,20 +17,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Namer App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 32, 0, 136)),
-        ),
-        home: MyHomePage(),
+      child: Consumer<MyAppState>(
+        builder: (context, appState, child){
+          return MaterialApp(
+            title: 'Namer App',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              useMaterial3: true,
+              colorScheme: ColorScheme.fromSeed(seedColor: appState.themeColor),
+            ),
+            home: MyHomePage(),
+          );
+        },
       ),
     );
   }
 }
 
 class MyAppState extends ChangeNotifier {
+  Color themeColor = const Color.fromARGB(255, 255, 0, 0);
   var current = WordPair.random();
   var history = <WordPair>[];
   var favorites = <WordPair>[];
@@ -97,6 +103,11 @@ class MyAppState extends ChangeNotifier {
     bannedWords.remove(word.toLowerCase());
     notifyListeners();
   }
+
+  void updateThemeColor(Color newColor){
+    themeColor = newColor;
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -135,6 +146,20 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Pair words'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          )
+        ],
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 450) {
