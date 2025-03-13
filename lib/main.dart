@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         title: 'Namer App',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 32, 0, 136)),
@@ -50,6 +51,24 @@ class MyAppState extends ChangeNotifier {
     } else {
       favorites.add(pair);
     }
+    notifyListeners();
+  }
+
+  void updateFirstWord(){
+    final newFirst = WordPair.random().first;
+    history.insert(0, current);
+    var animatedList = historyListKey?.currentState as AnimatedListState?;
+    current = WordPair(newFirst, current.second);
+    animatedList?.insertItem(0);
+    notifyListeners();
+  }
+
+  void updateSecondWord(){
+    final newSecond = WordPair.random().first;
+    history.insert(0, current);
+    var animatedList = historyListKey?.currentState as AnimatedListState?;
+    current = WordPair(current.first, newSecond);
+    animatedList?.insertItem(0);
     notifyListeners();
   }
 

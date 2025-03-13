@@ -1,5 +1,7 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:namer_app/main.dart';
+import 'package:provider/provider.dart';
 
 class BigCard extends StatelessWidget {
   const BigCard({
@@ -22,19 +24,27 @@ class BigCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: AnimatedSize(
           duration: Duration(milliseconds: 200),
-          // Make sure that the compound word wraps correctly when the window
-          // is too narrow.
           child: MergeSemantics(
             child: Wrap(
               children: [
-                Text(
-                  pair.first,
-                  style: style.copyWith(fontWeight: FontWeight.w200),
+                GestureDetector(
+                  onTap: () {
+                    context.read<MyAppState>().updateFirstWord();
+                  },
+                  child: Text(
+                    pair.first,
+                    style: style.copyWith(fontWeight: FontWeight.w200),
+                  ),
                 ),
-                Text(
-                  pair.second,
-                  style: style.copyWith(fontWeight: FontWeight.bold),
-                )
+                GestureDetector(
+                  onTap: () {
+                    context.read<MyAppState>().updateSecondWord();
+                  },
+                  child: Text(
+                    pair.second,
+                    style: style.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
           ),
