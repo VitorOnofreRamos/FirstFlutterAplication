@@ -23,7 +23,6 @@ class FavoritesPage extends StatelessWidget {
               '${appState.favorites.length} favorites:'),
         ),
         Expanded(
-          // Make better use of wide windows with a grid.
           child: GridView(
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 400,
@@ -31,19 +30,19 @@ class FavoritesPage extends StatelessWidget {
             ),
             children: [
               for (var pair in appState.favorites)
-                ListTile(
-                  leading: IconButton(
-                    icon: Icon(Icons.delete_outline, semanticLabel: 'Delete'),
-                    color: theme.colorScheme.primary,
-                    onPressed: () {
-                      appState.removeFavorite(pair);
-                    },
-                  ),
-                  title: Text(
-                    pair.asLowerCase,
-                    semanticsLabel: pair.asPascalCase,
-                  ),
+              ListTile(
+                leading: IconButton(
+                  icon: Icon(Icons.delete_outline, semanticLabel: 'Delete'),
+                  color: theme.colorScheme.primary,
+                  onPressed: () {
+                    appState.removeFavorite(pair);
+                  },
                 ),
+                title: Text(
+                  pair.asLowerCase,
+                  semanticsLabel: pair.asPascalCase,
+                ),
+              ),
             ],
           ),
         ),

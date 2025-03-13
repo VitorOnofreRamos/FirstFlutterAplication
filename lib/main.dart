@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:namer_app/pages/banned_words_page.dart';
 import 'package:namer_app/pages/favorites_page.dart';
 import 'package:namer_app/pages/generator_page.dart';
 import 'package:provider/provider.dart';
@@ -31,18 +32,44 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   var history = <WordPair>[];
+  var favorites = <WordPair>[];
+  var bannedWords = <String>[];
 
   GlobalKey? historyListKey;
 
   void getNext() {
     history.insert(0, current);
     var animatedList = historyListKey?.currentState as AnimatedListState?;
+    do {
+      current = WordPair.random();
+    } while (bannedWords.contains(current.first) || bannedWords.contains(current.second));
     animatedList?.insertItem(0);
-    current = WordPair.random();
     notifyListeners();
   }
 
-  var favorites = <WordPair>[];
+    void updateFirstWord(){
+    String newFirst;
+    history.insert(0, current);
+    var animatedList = historyListKey?.currentState as AnimatedListState?;
+    do{
+      newFirst = WordPair.random().first;
+    } while (bannedWords.contains(newFirst));
+    current = WordPair(newFirst, current.second);
+    animatedList?.insertItem(0);
+    notifyListeners();
+  }
+
+  void updateSecondWord(){
+    String newSecond;
+    history.insert(0, current);
+    var animatedList = historyListKey?.currentState as AnimatedListState?;
+    do{
+      newSecond = WordPair.random().second;
+    } while (bannedWords.contains(newSecond));
+    current = WordPair(current.first, newSecond);
+    animatedList?.insertItem(0);
+    notifyListeners();
+  }
 
   void toggleFavorite([WordPair? pair]) {
     pair = pair ?? current;
@@ -54,26 +81,20 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateFirstWord(){
-    final newFirst = WordPair.random().first;
-    history.insert(0, current);
-    var animatedList = historyListKey?.currentState as AnimatedListState?;
-    current = WordPair(newFirst, current.second);
-    animatedList?.insertItem(0);
-    notifyListeners();
-  }
-
-  void updateSecondWord(){
-    final newSecond = WordPair.random().first;
-    history.insert(0, current);
-    var animatedList = historyListKey?.currentState as AnimatedListState?;
-    current = WordPair(current.first, newSecond);
-    animatedList?.insertItem(0);
-    notifyListeners();
-  }
-
   void removeFavorite(WordPair pair) {
     favorites.remove(pair);
+    notifyListeners();
+  }
+
+  void addBannedWord(String word) {
+    if (!bannedWords.contains(word)) {
+      bannedWords.add(word.toLowerCase());
+      notifyListeners();
+    }
+  }
+
+  void removeBannedWord(String word) {
+    bannedWords.remove(word.toLowerCase());
     notifyListeners();
   }
 }
@@ -98,12 +119,13 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         page = FavoritesPage();
         break;
+      case 2:
+        page = BannedWordsPage();
+        break;
       default:
-        throw UnimplementedError('no widget for $selectedIndex');
+        throw UnimplementedError('No widget for $selectedIndex');
     }
 
-    // The container for the current page, with its background color
-    // and subtle switching animation.
     var mainArea = ColoredBox(
       color: colorScheme.surfaceContainerHighest,
       child: AnimatedSwitcher(
@@ -116,8 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 450) {
-            // Use a more mobile-friendly layout with BottomNavigationBar
-            // on narrow screens.
             return Column(
               children: [
                 Expanded(child: mainArea),
@@ -131,6 +151,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       BottomNavigationBarItem(
                         icon: Icon(Icons.favorite),
                         label: 'Favorites',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.block),
+                        label: 'Banned',
                       ),
                     ],
                     currentIndex: selectedIndex,
@@ -157,6 +181,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       NavigationRailDestination(
                         icon: Icon(Icons.favorite),
                         label: Text('Favorites'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.block),
+                        label: Text('Banned Words'),
                       ),
                     ],
                     selectedIndex: selectedIndex,
