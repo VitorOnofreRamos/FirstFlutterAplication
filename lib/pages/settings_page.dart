@@ -6,29 +6,36 @@ class SettingsPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    final availableColors = [
-      Colors.red,
-      Colors.green,
-      Colors.blue,
-      Colors.purple,
-      Colors.orange,
-    ];
 
     return Scaffold(
       appBar: AppBar(title: Text('Configurações')),
-      body: ListView.builder(
-        itemCount: availableColors.length,
-        itemBuilder: (context, index){
-          final color = availableColors[index];
-          return ListTile(
-            leading: CircleAvatar(backgroundColor: color),
-            title: Text(color.toString()),
-            trailing: appState.themeColor == color ? Icon(Icons.check) : null,
-            onTap: () {
-              appState.updateThemeColor(color);
-            },
-          );
-        }
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'Ajuste a cor do tema (HUE)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            SizedBox(height: 20),
+            // Exibe um preview da cor selecionada
+            CircleAvatar(
+              backgroundColor: appState.themeColor,
+              radius: 40,
+            ),
+            SizedBox(height: 20),
+            // Slider que altera a HUE
+            Slider(
+              min: 0.0,
+              max: 360.0,
+              value: appState.themeHue,
+              label: '${appState.themeHue.round()}°',
+              onChanged: (newHue) {
+                appState.updateThemeHue(newHue);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

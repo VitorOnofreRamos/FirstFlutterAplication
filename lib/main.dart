@@ -35,7 +35,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  Color themeColor = const Color.fromARGB(255, 255, 0, 0);
+  double themeHue = 0.0;
+  Color get themeColor => HSVColor.fromAHSV(1, themeHue, 1, 1).toColor();
+  
   var current = WordPair.random();
   var history = <WordPair>[];
   var favorites = <WordPair>[];
@@ -104,8 +106,8 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateThemeColor(Color newColor){
-    themeColor = newColor;
+  void updateThemeHue(double newHue){
+    themeHue = newHue;
     notifyListeners();
   }
 }
