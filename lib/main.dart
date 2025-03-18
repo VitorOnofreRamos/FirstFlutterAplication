@@ -148,19 +148,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pair words'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            },
-          )
-        ],
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.settings),
+        onPressed: (){
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => SettingsPage()),
+          );
+        },
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {

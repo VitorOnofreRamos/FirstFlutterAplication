@@ -6,6 +6,7 @@ class SettingsPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text('Configurações')),
@@ -18,13 +19,58 @@ class SettingsPage extends StatelessWidget{
               style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 20),
-            // Exibe um preview da cor selecionada
-            CircleAvatar(
-              backgroundColor: appState.themeColor,
-              radius: 40,
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                    color: theme.colorScheme.primary,
+                    boxShadow: [
+                      BoxShadow(
+                        spreadRadius: 2.0,
+                        blurRadius: 10.0,
+                        color: Colors.black26,
+                      ),
+                    ],
+                  ),
+                  width: 70,
+                  height: 70,
+                ),
+                Column(children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(200),
+                      color: theme.colorScheme.inversePrimary,
+                      boxShadow: [
+                        BoxShadow(
+                          spreadRadius: 2.0,
+                          blurRadius: 10.0,
+                          color: Colors.black26,
+                        ),
+                      ],
+                    ),
+                    width: 35,
+                    height: 35,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(200),
+                      color: theme.colorScheme.inverseSurface,
+                      boxShadow: [
+                        BoxShadow(
+                          spreadRadius: 2.0,
+                          blurRadius: 10.0,
+                          color: Colors.black26,
+                        ),
+                      ],
+                    ),
+                    width: 35,
+                    height: 35,
+                  ),
+                ],)
+              ],
             ),
             SizedBox(height: 20),
-            // Slider que altera a HUE
             Slider(
               min: 0.0,
               max: 360.0,
