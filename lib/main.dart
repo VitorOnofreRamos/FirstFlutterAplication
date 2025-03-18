@@ -157,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 450) {

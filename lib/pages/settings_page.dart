@@ -20,6 +20,7 @@ class SettingsPage extends StatelessWidget{
             ),
             SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   decoration: BoxDecoration(
