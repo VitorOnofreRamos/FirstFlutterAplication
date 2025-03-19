@@ -19,6 +19,35 @@ class _HistoryListViewState extends State<HistoryListView> {
     end: Alignment.bottomCenter,
   );
 
+  void _removeItem(BuildContext context, int index) {
+    final appState = context.read<MyAppState>();
+    final pair = appState.history[index];
+
+    appState.history.removeAt(index);
+
+    _listKey.currentState?.removeItem(
+      index,
+      (context, animation) => SizeTransition(
+        sizeFactor: animation,
+        child: Container(),
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${pair.asPascalCase} removido do histórico'),
+        action: SnackBarAction(
+          label: 'Desfazer', 
+          onPressed: (){
+            appState.history.insert(index, pair);
+            _listKey.currentState?.insertItem(index);
+          }
+        ),
+        duration: Duration(seconds: 4),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<MyAppState>();
@@ -37,36 +66,24 @@ class _HistoryListViewState extends State<HistoryListView> {
           final pair = appState.history[index];
           return SizeTransition(
             sizeFactor: animation,
-            child: Dismissible(
-              key: ValueKey(pair.asPascalCase),
-              background: Container(color: theme.colorScheme.onErrorContainer),
-              onDismissed: (direction) {
-                // Remove o item da lista de histórico
-                appState.history.removeAt(index);
-                // Remove o item da AnimatedList
-                _listKey.currentState?.removeItem(
-                  index,
-                  (context, animation) => SizeTransition(
-                    sizeFactor: animation,
-                    child: Container(),
-                  ),
-                );
-                // Opcional: Exibir uma mensagem de confirmação
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${pair.asPascalCase} removido do histórico')),
-                );
-              },
-              child: Center(
-                child: TextButton.icon(
-                  onPressed: () {
-                    appState.toggleFavorite(pair);
-                  },
-                  icon: appState.favorites.contains(pair)
-                      ? Icon(Icons.favorite, size: 12)
-                      : SizedBox(),
-                  label: Text(
-                    pair.asLowerCase,
-                    semanticsLabel: pair.asPascalCase,
+            child: GestureDetector(
+              onSecondaryTap: () => _removeItem(context, index), // Clique direito remove
+              child: Dismissible(
+                key: ValueKey(pair.asPascalCase),
+                background: Container(color: theme.colorScheme.onErrorContainer),
+                onDismissed: (direction) => _removeItem(context, index), // Swipe também remove
+                child: Center(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      appState.toggleFavorite(pair);
+                    },
+                    icon: appState.favorites.contains(pair)
+                        ? Icon(Icons.favorite, size: 12)
+                        : SizedBox(),
+                    label: Text(
+                      pair.asLowerCase,
+                      semanticsLabel: pair.asPascalCase,
+                    ),
                   ),
                 ),
               ),
@@ -76,5 +93,4 @@ class _HistoryListViewState extends State<HistoryListView> {
       ),
     );
   }
-
 }
