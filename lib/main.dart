@@ -1,10 +1,10 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:namer_app/components/draggable_fab.dart';
 import 'package:namer_app/pages/banned_words_page.dart';
 import 'package:namer_app/pages/favorites_page.dart';
 import 'package:namer_app/pages/generator_page.dart';
 import 'package:namer_app/pages/login_page.dart';
-import 'package:namer_app/pages/settings_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -120,8 +120,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
-  double _posX = 10;
-  double _posY = 500;
 
   @override
   Widget build(BuildContext context) {
@@ -219,35 +217,9 @@ class _MyHomePageState extends State<MyHomePage> {
               }
             },
           ),
-          Positioned(
-            left: _posX,
-            top: _posY,
-            child: Draggable(
-              feedback: FloatingActionButton(
-                onPressed: _openSettings,
-                child: Icon(Icons.settings),
-              ),
-              childWhenDragging: SizedBox(),
-              onDragEnd: (details){
-                setState(() {
-                  _posX = details.offset.dx.clamp(0.0, MediaQuery.of(context).size.width - 56);
-                  _posY = details.offset.dy.clamp(0.0, MediaQuery.of(context).size.height - 56);
-                });
-              },
-              child: FloatingActionButton(
-                onPressed: _openSettings,
-                child: Icon(Icons.settings),
-              ),
-            ),
-          )
+          DraggableFab(),
         ],
       ),
-    );
-  }
-  void _openSettings(){
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SettingsPage()),
     );
   }
 }
