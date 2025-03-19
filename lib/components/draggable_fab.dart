@@ -1,4 +1,3 @@
-// draggable_fab.dart
 import 'package:flutter/material.dart';
 import 'package:namer_app/pages/settings_page.dart';
 
@@ -13,26 +12,34 @@ class _DraggableFabState extends State<DraggableFab> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      left: _posX,
-      top: _posY,
-      child: Draggable(
-        feedback: FloatingActionButton(
-          onPressed: _openSettings,
-          child: Icon(Icons.settings),
-        ),
-        childWhenDragging: SizedBox(),
-        onDragEnd: (details) {
-          setState(() {
-            _posX = details.offset.dx.clamp(0.0, MediaQuery.of(context).size.width - 56);
-            _posY = details.offset.dy.clamp(0.0, MediaQuery.of(context).size.height - 56);
-          });
-        },
-        child: FloatingActionButton(
-          onPressed: _openSettings,
-          child: Icon(Icons.settings),
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          children: [
+            Positioned(
+              left: _posX.clamp(0.0, constraints.maxWidth - 56),
+              top: _posY.clamp(0.0, constraints.maxHeight - 56),
+              child: Draggable(
+                feedback: FloatingActionButton(
+                  onPressed: _openSettings,
+                  child: Icon(Icons.settings),
+                ),
+                childWhenDragging: SizedBox(),
+                onDragEnd: (details) {
+                  setState(() {
+                    _posX = details.offset.dx.clamp(0.0, constraints.maxWidth - 56);
+                    _posY = details.offset.dy.clamp(0.0, constraints.maxHeight - 56);
+                  });
+                },
+                child: FloatingActionButton(
+                  onPressed: _openSettings,
+                  child: Icon(Icons.settings),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
