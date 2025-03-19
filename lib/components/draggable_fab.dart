@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:namer_app/pages/settings_page.dart';
+import 'package:namer_app/services/storage_service.dart';
 
 class DraggableFab extends StatefulWidget {
   @override
-  _DraggableFabState createState() => _DraggableFabState();
+  DraggableFabState createState() => DraggableFabState();
 }
 
-class _DraggableFabState extends State<DraggableFab> {
+class DraggableFabState extends State<DraggableFab> {
   double _posX = 10;
   double _posY = 500;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPosition();
+  }
+
+  Future<void> _loadPosition() async {
+    var position = await StorageService.loadFabPosition();
+    setState(() {
+      _posX = position[0];
+      _posY = position[1];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +45,7 @@ class _DraggableFabState extends State<DraggableFab> {
                     _posX = details.offset.dx.clamp(0.0, constraints.maxWidth - 56);
                     _posY = details.offset.dy.clamp(0.0, constraints.maxHeight - 56);
                   });
+                  StorageService.saveFabPosition(_posX, _posY);
                 },
                 child: FloatingActionButton(
                   onPressed: _openSettings,

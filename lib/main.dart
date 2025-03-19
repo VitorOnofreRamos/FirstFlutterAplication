@@ -5,6 +5,7 @@ import 'package:namer_app/pages/banned_words_page.dart';
 import 'package:namer_app/pages/favorites_page.dart';
 import 'package:namer_app/pages/generator_page.dart';
 import 'package:namer_app/pages/login_page.dart';
+import 'package:namer_app/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -45,6 +46,20 @@ class MyAppState extends ChangeNotifier {
   var bannedWords = <String>[];
 
   GlobalKey? historyListKey;
+
+  MyAppState(){
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    var favs = await StorageService.loadFavorites();
+    var banned = await StorageService.loadBannedWords();
+    themeHue = await StorageService.loadThemeHue();
+
+    favorites = favs.map((word) => WordPair(word.split(" ")[0], word.split(" ")[1])).toList();
+    bannedWords = banned;
+    notifyListeners();
+  }
 
   void getNext() {
     history.insert(0, current);
@@ -87,6 +102,7 @@ class MyAppState extends ChangeNotifier {
     } else {
       favorites.add(pair);
     }
+    StorageService.saveFavorites(favorites.map((p) => "${p.first} ${p.second}").toList());
     notifyListeners();
   }
 
@@ -98,17 +114,20 @@ class MyAppState extends ChangeNotifier {
   void addBannedWord(String word) {
     if (!bannedWords.contains(word)) {
       bannedWords.add(word.toLowerCase());
+      StorageService.saveBannedWords(bannedWords);
       notifyListeners();
     }
   }
 
   void removeBannedWord(String word) {
     bannedWords.remove(word.toLowerCase());
+    StorageService.saveBannedWords(bannedWords);
     notifyListeners();
   }
 
   void updateThemeHue(double newHue){
     themeHue = newHue;
+    StorageService.saveThemeHue(newHue);
     notifyListeners();
   }
 }
