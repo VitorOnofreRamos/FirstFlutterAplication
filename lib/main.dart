@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:namer_app/pages/banned_words_page.dart';
 import 'package:namer_app/pages/favorites_page.dart';
 import 'package:namer_app/pages/generator_page.dart';
+import 'package:namer_app/pages/login_page.dart';
 import 'package:namer_app/pages/settings_page.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
               useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(seedColor: appState.themeColor),
             ),
-            home: MyHomePage(),
+            home: LoginPage(),
           );
         },
       ),
