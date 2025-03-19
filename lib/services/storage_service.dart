@@ -44,4 +44,19 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getDouble('themeHue') ?? 0.0;
   }
+
+  static Future<void> saveLoginStatus(bool isLoggedIn) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', isLoggedIn);
+  }
+
+  static Future<bool> isUserLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
+  static Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
+  }
 }

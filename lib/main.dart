@@ -8,12 +8,17 @@ import 'package:namer_app/pages/login_page.dart';
 import 'package:namer_app/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  bool isLoggedIn = await StorageService.isUserLoggedIn();
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,7 @@ class MyApp extends StatelessWidget {
               useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(seedColor: appState.themeColor),
             ),
-            home: LoginPage(),
+            home: isLoggedIn ? MyHomePage() : LoginPage(),
           );
         },
       ),
@@ -140,6 +145,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
 
+  void _logout() async {
+    await StorageService.logout();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var colorScheme = Theme.of(context).colorScheme;
@@ -168,6 +181,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: _logout, icon: Icon(Icons.logout))
+        ],
+        backgroundColor: mainArea.color
+      ),
       body: Stack(
         children: [
           LayoutBuilder(
