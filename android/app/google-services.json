@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "751472396518",
+    "project_id": "double-word-generator",
+    "storage_bucket": "double-word-generator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:751472396518:android:146bde1bd60b0112f89327",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1yJYQp6lml8X3cMbCkuOf4u0ineA3pFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

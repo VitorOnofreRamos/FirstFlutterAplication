@@ -7,12 +7,12 @@ class AuthTextField extends StatelessWidget {
   final bool isPassword;
 
   const AuthTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.controller,
     required this.validator,
     this.isPassword = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

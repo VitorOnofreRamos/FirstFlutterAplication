@@ -1,4 +1,5 @@
 import 'package:english_words/english_words.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:namer_app/components/draggable_fab.dart';
 import 'package:namer_app/pages/banned_words_page.dart';
@@ -12,7 +13,22 @@ import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  if(kIsWeb){
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyDTRzwxzy9P3r4SinHd2MKg2pg_-R97PXA",
+        authDomain: "double-word-generator.firebaseapp.com",
+        projectId: "double-word-generator",
+        storageBucket: "double-word-generator.firebasestorage.app",
+        messagingSenderId: "751472396518",
+        appId: "1:751472396518:web:bf2759ed1a2687a8f89327"
+      )
+    );
+  }else{
+    await Firebase.initializeApp();
+  }
+
   bool isLoggedIn = await StorageService.isUserLoggedIn();
 
   runApp(MyApp(isLoggedIn: isLoggedIn));
@@ -21,7 +37,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
 
-  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {

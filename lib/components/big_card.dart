@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 
 class BigCard extends StatelessWidget {
   const BigCard({
-    Key? key,
+    super.key,
     required this.pair,
-  }) : super(key: key);
+  });
 
   final WordPair pair;
 

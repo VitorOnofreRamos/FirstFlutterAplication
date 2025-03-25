@@ -5,10 +5,10 @@ import 'package:namer_app/pages/login_page.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
-  _RegistrationPageState createState() => _RegistrationPageState();
+  RegistrationPageState createState() => RegistrationPageState();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   final AuthController _authController = AuthController();
   
