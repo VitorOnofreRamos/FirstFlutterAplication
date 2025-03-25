@@ -3,6 +3,10 @@ import 'package:namer_app/pages/settings_page.dart';
 import 'package:namer_app/services/storage_service.dart';
 
 class DraggableFab extends StatefulWidget {
+  final String userId;
+
+  const DraggableFab({super.key, required this.userId});
+
   @override
   DraggableFabState createState() => DraggableFabState();
 }
@@ -18,7 +22,7 @@ class DraggableFabState extends State<DraggableFab> {
   }
 
   Future<void> _loadPosition() async {
-    var position = await StorageService.loadFabPosition();
+    var position = await StorageService.loadFabPosition(widget.userId);
     setState(() {
       _posX = position[0];
       _posY = position[1];
@@ -45,7 +49,7 @@ class DraggableFabState extends State<DraggableFab> {
                     _posX = details.offset.dx.clamp(0.0, constraints.maxWidth - 56);
                     _posY = details.offset.dy.clamp(0.0, constraints.maxHeight - 56);
                   });
-                  StorageService.saveFabPosition(_posX, _posY);
+                  StorageService.saveFabPosition(widget.userId, _posX, _posY);
                 },
                 child: FloatingActionButton(
                   onPressed: _openSettings,

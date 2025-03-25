@@ -10,13 +10,15 @@ import 'package:namer_app/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
   if(kIsWeb){
     await Firebase.initializeApp(
-      options: const FirebaseOptions(
+      options: FirebaseOptions(
         apiKey: "AIzaSyDTRzwxzy9P3r4SinHd2MKg2pg_-R97PXA",
         authDomain: "double-word-generator.firebaseapp.com",
         projectId: "double-word-generator",
@@ -29,20 +31,23 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
 
-  bool isLoggedIn = await StorageService.isUserLoggedIn();
+  // Verifique se o usuário está logado
+  User? user = FirebaseAuth.instance.currentUser;
+  bool isLoggedIn = user != null;
 
-  runApp(MyApp(isLoggedIn: isLoggedIn));
+  runApp(MyApp(isLoggedIn: isLoggedIn, userId: user?.uid));
 }
 
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
+  final String? userId;
 
-  const MyApp({super.key, required this.isLoggedIn});
+  const MyApp({super.key, required this.isLoggedIn, this.userId});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (context) => MyAppState(userId: userId),
       child: Consumer<MyAppState>(
         builder: (context, appState, child){
           return MaterialApp(
@@ -61,6 +66,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
+  final String? userId;
+
   double themeHue = 0.0;
   Color get themeColor => HSVColor.fromAHSV(1, themeHue, 1, 1).toColor();
   
@@ -71,14 +78,16 @@ class MyAppState extends ChangeNotifier {
 
   GlobalKey? historyListKey;
 
-  MyAppState(){
+  MyAppState({this.userId}){
     _loadData();
   }
 
   Future<void> _loadData() async {
-    var favs = await StorageService.loadFavorites();
-    var banned = await StorageService.loadBannedWords();
-    themeHue = await StorageService.loadThemeHue();
+    if(userId == null) return;
+
+    var favs = await StorageService.loadFavorites(userId!);
+    var banned = await StorageService.loadBannedWords(userId!);
+    themeHue = await StorageService.loadThemeHue(userId!);
 
     favorites = favs.map((word) => WordPair(word.split(" ")[0], word.split(" ")[1])).toList();
     bannedWords = banned;
@@ -95,7 +104,7 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-    void updateFirstWord(){
+  void updateFirstWord(){
     String newFirst;
     history.insert(0, current);
     var animatedList = historyListKey?.currentState as AnimatedListState?;
@@ -120,38 +129,49 @@ class MyAppState extends ChangeNotifier {
   }
 
   void toggleFavorite([WordPair? pair]) {
+    if(userId == null) return;
+
     pair = pair ?? current;
     if (favorites.contains(pair)) {
       favorites.remove(pair);
     } else {
       favorites.add(pair);
     }
-    StorageService.saveFavorites(favorites.map((p) => "${p.first} ${p.second}").toList());
+    StorageService.saveFavorites(userId!, favorites.map((p) => "${p.first} ${p.second}").toList());
     notifyListeners();
   }
 
   void removeFavorite(WordPair pair) {
+    if(userId == null) return;
+
     favorites.remove(pair);
+    StorageService.saveFavorites(userId!, favorites.map((p) => "${p.first} ${p.second}").toList());
     notifyListeners();
   }
 
   void addBannedWord(String word) {
+    if(userId == null) return;
+
     if (!bannedWords.contains(word)) {
       bannedWords.add(word.toLowerCase());
-      StorageService.saveBannedWords(bannedWords);
+      StorageService.saveBannedWords(userId!, bannedWords);
       notifyListeners();
     }
   }
 
   void removeBannedWord(String word) {
+    if(userId == null) return;
+
     bannedWords.remove(word.toLowerCase());
-    StorageService.saveBannedWords(bannedWords);
+    StorageService.saveBannedWords(userId!, bannedWords);
     notifyListeners();
   }
 
   void updateThemeHue(double newHue){
+    if(userId == null) return;
+
     themeHue = newHue;
-    StorageService.saveThemeHue(newHue);
+    StorageService.saveThemeHue(userId!, themeHue);
     notifyListeners();
   }
 }
@@ -164,13 +184,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
 
-  void _logout() async {
-    await StorageService.logout();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
-  }
+  // void _logout() async {
+  //   await StorageService.logout();
+  //   Navigator.pushReplacement(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => LoginPage()),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -200,12 +220,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(onPressed: _logout, icon: Icon(Icons.logout))
-        ],
-        backgroundColor: mainArea.color
-      ),
+      // appBar: AppBar(
+      //   actions: [
+      //     IconButton(onPressed: _logout, icon: Icon(Icons.logout))
+      //   ],
+      //   backgroundColor: mainArea.color
+      // ),
       body: Stack(
         children: [
           LayoutBuilder(
@@ -274,7 +294,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }
             },
           ),
-          DraggableFab(),
+          DraggableFab(userId: context.read<MyAppState>().userId ?? ''),
         ],
       ),
     );

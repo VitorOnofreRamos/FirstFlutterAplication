@@ -1,62 +1,81 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StorageService {
-  static Future<void> saveFavorites(List<String> favorites) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('favorites', favorites);
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Save favorites to Firestore
+  static Future<void> saveFavorites(String userId, List<String> favorites) async {
+    await _firestore.collection('users').doc(userId).set({
+      'favorites': favorites,
+    }, SetOptions(merge: true));
   }
 
-  static Future<List<String>> loadFavorites() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList('favorites') ?? [];
+  // Load favorites from Firestore
+  static Future<List<String>> loadFavorites(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return List<String>.from(doc.data()?['favorites'] ?? []);
   }
 
-  static Future<void> saveBannedWords(List<String> bannedWords) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('bannedWords', bannedWords);
+  // Save banned words to Firestore
+  static Future<void> saveBannedWords(String userId, List<String> bannedWords) async {
+    await _firestore.collection('users').doc(userId).set({
+      'bannedWords': bannedWords,
+    }, SetOptions(merge: true));
   }
 
-  static Future<List<String>> loadBannedWords() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList('bannedWords') ?? [];
+  // Load banned words from Firestore
+  static Future<List<String>> loadBannedWords(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return List<String>.from(doc.data()?['bannedWords'] ?? []);
   }
 
-  static Future<void> saveFabPosition(double x, double y) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('fabX', x);
-    await prefs.setDouble('fabY', y);
+  // Save FAB position to Firestore
+  static Future<void> saveFabPosition(String userId, double x, double y) async {
+    await _firestore.collection('users').doc(userId).set({
+      'fabPosition': {'x': x, 'y': y},
+    }, SetOptions(merge: true));
   }
 
-  static Future<List<double>> loadFabPosition() async {
-    final prefs = await SharedPreferences.getInstance();
-    return [
-      prefs.getDouble('fabX') ?? 10.0,
-      prefs.getDouble('fabY') ?? 500.0,
-    ];
+  // Load FAB position from Firestore
+  static Future<List<double>> loadFabPosition(String userId) async {
+    if (userId == null || userId.isEmpty) {
+      throw ArgumentError('Document path must not be empty');
+    }
+    final doc = await _firestore.collection('users').doc(userId).get();
+    final position = doc.data()?['fabPosition'] ?? {'x': 10.0, 'y': 500.0};
+    return [position['x'], position['y']];
   }
 
-  static Future<void> saveThemeHue(double hue) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('themeHue', hue);
+  // Save theme hue to Firestore
+  static Future<void> saveThemeHue(String userId, double hue) async {
+    await _firestore.collection('users').doc(userId).set({
+      'themeHue': hue,
+    }, SetOptions(merge: true));
   }
 
-  static Future<double> loadThemeHue() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getDouble('themeHue') ?? 0.0;
+  // Load theme hue from Firestore
+  static Future<double> loadThemeHue(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return doc.data()?['themeHue'] ?? 0.0;
   }
 
-  static Future<void> saveLoginStatus(bool isLoggedIn) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', isLoggedIn);
+  // Save login status to Firestore
+  static Future<void> saveLoginStatus(String userId, bool isLoggedIn) async {
+    await _firestore.collection('users').doc(userId).set({
+      'isLoggedIn': isLoggedIn,
+    }, SetOptions(merge: true));
   }
 
-  static Future<bool> isUserLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isLoggedIn') ?? false;
+  // Check login status from Firestore
+  static Future<bool> isUserLoggedIn(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return doc.data()?['isLoggedIn'] ?? false;
   }
 
-  static Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', false);
+  // Logout user
+  static Future<void> logout(String userId) async {
+    await _firestore.collection('users').doc(userId).set({
+      'isLoggedIn': false,
+    }, SetOptions(merge: true));
   }
 }
