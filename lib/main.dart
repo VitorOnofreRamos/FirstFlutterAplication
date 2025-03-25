@@ -8,8 +8,11 @@ import 'package:namer_app/pages/login_page.dart';
 import 'package:namer_app/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   bool isLoggedIn = await StorageService.isUserLoggedIn();
 
   runApp(MyApp(isLoggedIn: isLoggedIn));

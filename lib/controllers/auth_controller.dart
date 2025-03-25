@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -44,5 +49,44 @@ class AuthController {
     }
 
     return null;
+  }
+
+  // Método de login utilizando o Firebase Auth
+  Future<UserCredential?> login() async {
+    try{
+      final userCredencial = await _auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      return userCredencial;
+    } catch (e) {
+      print("Erro ao realizar login: $e");
+      return null;
+    }
+  }
+
+  // Método de cadastro que cria o usuário e armazena dadso adicionais no Firestore
+  Future<UserCredential?> register({
+    required String name,
+    required String age,
+  }) async {
+    try {
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      //Armazenar dados adicionais no Firestore
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'name': name,
+        'age': age,
+        'email': emailController.text.trim(),
+      });
+
+      return userCredential;
+    } catch (e) {
+      print("Erro ao realizar cadastro: $e");
+      return null;
+    }
   }
 }
